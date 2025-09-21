@@ -1,29 +1,22 @@
 package com.devsuperior.dscommerce.services;
 
-import com.devsuperior.dscommerce.dto.OrderDTO;
-import com.devsuperior.dscommerce.dto.OrderItemDTO;
-import com.devsuperior.dscommerce.dto.ProductDTO;
-import com.devsuperior.dscommerce.dto.UserDTO;
-import com.devsuperior.dscommerce.entities.*;
-import com.devsuperior.dscommerce.projections.UserDetailsProjection;
-import com.devsuperior.dscommerce.repositories.OrderItemRepository;
-import com.devsuperior.dscommerce.repositories.OrderRepository;
-import com.devsuperior.dscommerce.repositories.ProductRepository;
-import com.devsuperior.dscommerce.repositories.UserRepository;
-import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
-import jakarta.validation.Valid;
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.List;
+import com.devsuperior.dscommerce.dto.OrderDTO;
+import com.devsuperior.dscommerce.dto.OrderItemDTO;
+import com.devsuperior.dscommerce.entities.Order;
+import com.devsuperior.dscommerce.entities.OrderItem;
+import com.devsuperior.dscommerce.entities.OrderStatus;
+import com.devsuperior.dscommerce.entities.Product;
+import com.devsuperior.dscommerce.entities.User;
+import com.devsuperior.dscommerce.repositories.OrderItemRepository;
+import com.devsuperior.dscommerce.repositories.OrderRepository;
+import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class OrderService {
@@ -66,7 +59,7 @@ public class OrderService {
             OrderItem item = new OrderItem(order, product, itemDto.getQuantity(), product.getPrice());
             order.getItems().add(item);
         }
-        repository.save(order);
+        order = repository.save(order);
         orderItemRepository.saveAll(order.getItems());
 
         return new OrderDTO(order);
